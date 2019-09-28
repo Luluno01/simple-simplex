@@ -10,7 +10,11 @@
                 <el-form-item label="Ojbective" class="objective">
                   <el-row type="flex" justify="space-around" :gutter="5">
                     <el-col :span="21"><el-input v-model="objective" placeholder="2 * x1 + 3 * x2"></el-input></el-col>
-                    <el-col :span="3"><el-button icon="el-icon-close" circle @click.prevent="objective = ''"></el-button></el-col>
+                    <el-col :span="3">
+                      <el-tooltip effect="dark" content="Clear Objective" placement="top">
+                        <el-button icon="el-icon-close" circle @click.prevent="objective = ''"></el-button>
+                      </el-tooltip>
+                    </el-col>
                   </el-row>
                 </el-form-item>
                 <el-form-item
@@ -21,17 +25,38 @@
                   class="constraints"
                 >
                   <el-row type="flex" justify="space-around" :gutter="5">
-                    <el-col :span="3"><el-input v-model="constraint.lhs"></el-input></el-col>
+                    <el-col :span="3"><el-input v-model="constraint.lhs" placeholder="w1"></el-input></el-col>
                     <el-col :span="1" style="text-align: center;">=</el-col>
-                    <el-col :span="17"><el-input v-model="constraint.rhs"></el-input></el-col>
-                    <el-col :span="3"><el-button icon="el-icon-delete" circle v-show="constraints.length > 1" @click.prevent="removeConstraint(i)"></el-button></el-col>
+                    <el-col :span="17"><el-input v-model="constraint.rhs" placeholder="6 - 2 * x1 - 3 * x2"></el-input></el-col>
+                    <el-col :span="3">
+                      <el-tooltip effect="dark" content="Delete Constraint" placement="top">
+                        <el-button icon="el-icon-delete" circle v-show="constraints.length > 1" @click.prevent="removeConstraint(i)"></el-button>
+                      </el-tooltip>
+                    </el-col>
                   </el-row>
                 </el-form-item>
                 <el-form-item>
-                  <el-button class="add-constraint" icon="el-icon-plus" @click="addConstraint"></el-button>
+                  <el-row type="flex" justify="flex-start" :gutter="5">
+                    <el-col :span="21">
+                      <el-tooltip effect="dark" content="Add Objective" placement="top">
+                        <el-button class="add-constraint" icon="el-icon-plus" @click="addConstraint"></el-button>
+                      </el-tooltip>
+                    </el-col>
+                  </el-row>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" class="solve" @click.stop="solve">Go!</el-button>
+                  <el-row type="flex" justify="space-around" :gutter="5">
+                    <el-col :span="21">
+                      <el-tooltip effect="dark" content="Solve" placement="top">
+                        <el-button type="primary" class="solve" @click.stop="solve">Go!</el-button>
+                      </el-tooltip>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-tooltip effect="dark" content="Load Example" placement="top">
+                        <el-button icon="el-icon-files" circle @click.prevent="loadExample"></el-button>
+                      </el-tooltip>
+                    </el-col>
+                  </el-row>
                 </el-form-item>
               </el-form>
               <el-tabs v-show="lpMathOrigin.objective">
@@ -58,6 +83,7 @@
 <script lang="ts">
 ///<reference path="./shims-simplex.d.ts"/>
 ///<reference path="./global.d.ts"/>
+///<reference path="../node_modules/element-ui/types/notification.d.ts"/>
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import VStep from '@/components/VStep.vue'
 import * as algebra from 'algebra.js'
@@ -83,14 +109,9 @@ import {
   }
 })
 export default class App extends Vue {
-  objective: string = '-3 * x1 + 4 * x2'
+  objective: string = ''
   constraints: { lhs: string, rhs: string }[] = [
-    { lhs: 'w1', rhs: '-8 + 4 * x1 + 2 * x2' },
-    { lhs: 'w2', rhs: '-2 + 2 * x1' },
-    { lhs: 'w3', rhs: '10 - 3 * x1 - 2 * x2' },
-    { lhs: 'w4', rhs: '1 + x1 - 3 * x2' },
-    { lhs: 'w5', rhs: '-2 + 3 * x2' },
-    { lhs: 'w6', rhs: '' }
+    { lhs: 'w1', rhs: '' }
   ]
   lpMathOrigin: LPMath = {
     objective: '',
@@ -129,11 +150,25 @@ export default class App extends Vue {
     }
   }
 
+  loadExample() {
+    this.objective = '-3 * x1 + 4 * x2'
+    const { constraints } = this
+    constraints.splice(0, constraints.length)
+    const exampleConstraints: { lhs: string, rhs: string }[] = [
+      { lhs: 'w1', rhs: '-8 + 4 * x1 + 2 * x2' },
+      { lhs: 'w2', rhs: '-2 + 2 * x1' },
+      { lhs: 'w3', rhs: '10 - 3 * x1 - 2 * x2' },
+      { lhs: 'w4', rhs: '1 + x1 - 3 * x2' },
+      { lhs: 'w5', rhs: '-2 + 3 * x2' }
+    ]
+    for(const cons of exampleConstraints) constraints.push(cons)
+  }
+
   solve() {
     try {
       this._solve()
     } catch(err) {
-      this.notifyError('Opps', 'We are sorry but something went wrong. If you believe this is a bug, please open an issue on github.com/Luluno01/simple-simplex')
+      this.notifyError('Opps', 'We are sorry but something went wrong<br>If you believe this is a bug, please open an issue on <a href="https://github.com/Luluno01/simple-simplex" target="_blank">simple-simplex</a>')
     }
   }
 
@@ -349,7 +384,8 @@ ${linearProgramToLaTex(lp)}`
       title,
       type: 'error',
       message,
-      duration: 3000
+      duration: 3000,
+      dangerouslyUseHTMLString: true
     })
   }
 
@@ -409,11 +445,11 @@ ${linearProgramToLaTex(lp)}`
 } */
 
 .add-constraint {
-  width: calc(100% - 5em);
+  width: 100%;
   border: 0.1em dashed #DCDFE6 !important;
 }
 
 .solve {
-  width: calc(100% - 5em);
+  width: 100%;
 }
 </style>

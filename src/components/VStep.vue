@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-///<reference path="./global.d.ts"/>
+///<reference path="../global.d.ts"/>
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import VLP from './VLP.vue'
 
