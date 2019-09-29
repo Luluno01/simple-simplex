@@ -8,11 +8,11 @@
           </el-row>
           <el-row type="flex" justify="space-around">
             <el-col :xs="20" :sm="16" :md="12">
-              <el-form ref="form" label-position="left" label-width="7em">
+              <el-form ref="form" :label-position="labelPosition" label-width="7em">
                 <el-form-item label="Ojbective" class="objective">
                   <el-row type="flex" justify="space-around" :gutter="5">
-                    <el-col :span="21"><el-input v-model="objective" placeholder="2 * x1 + 3 * x2"></el-input></el-col>
-                    <el-col :span="3">
+                    <el-col :span="mobile ? 22 : 21"><el-input v-model="objective" placeholder="2 * x1 + 3 * x2"></el-input></el-col>
+                    <el-col :span="mobile ? 2 : 3">
                       <el-tooltip effect="dark" content="Clear Objective" placement="top">
                         <el-button icon="el-icon-close" circle @click.prevent="objective = ''"></el-button>
                       </el-tooltip>
@@ -27,19 +27,19 @@
                   class="constraints"
                 >
                   <el-row type="flex" justify="space-around" :gutter="5">
-                    <el-col :span="3"><el-input v-model="constraint.lhs" placeholder="w1"></el-input></el-col>
-                    <el-col :span="1" style="text-align: center;">=</el-col>
-                    <el-col :span="17"><el-input v-model="constraint.rhs" placeholder="6 - 2 * x1 - 3 * x2"></el-input></el-col>
-                    <el-col :span="3">
+                    <el-col :span="mobile ? 4 : 3"><el-input v-model="constraint.lhs" placeholder="w1"></el-input></el-col>
+                    <el-col :span="mobile ? 2 : 1" style="text-align: center;">=</el-col>
+                    <el-col :span="mobile ? 16 : 17"><el-input v-model="constraint.rhs" placeholder="6 - 2 * x1 - 3 * x2"></el-input></el-col>
+                    <el-col :span="mobile ? 2 : 3">
                       <el-tooltip effect="dark" content="Delete Constraint" placement="top">
-                        <el-button icon="el-icon-delete" circle v-show="constraints.length > 1" @click.prevent="removeConstraint(i)"></el-button>
+                        <el-button icon="el-icon-delete" circle :disabled="constraints.length <= 1" @click.prevent="removeConstraint(i)"></el-button>
                       </el-tooltip>
                     </el-col>
                   </el-row>
                 </el-form-item>
                 <el-form-item>
                   <el-row type="flex" justify="flex-start" :gutter="5">
-                    <el-col :span="21">
+                    <el-col :span="mobile ? 22 : 21">
                       <el-tooltip effect="dark" content="Add Constraint" placement="top">
                         <el-button class="add-constraint" icon="el-icon-plus" @click="addConstraint"></el-button>
                       </el-tooltip>
@@ -48,12 +48,12 @@
                 </el-form-item>
                 <el-form-item>
                   <el-row type="flex" justify="space-around" :gutter="5">
-                    <el-col :span="21">
+                    <el-col :span="mobile ? 22 : 21">
                       <el-tooltip effect="dark" content="Solve" placement="top">
                         <el-button type="primary" class="solve" @click.stop="solve">Go!</el-button>
                       </el-tooltip>
                     </el-col>
-                    <el-col :span="3">
+                    <el-col :span="mobile ? 2 : 3">
                       <el-tooltip effect="dark" content="Load Example" placement="top">
                         <el-button icon="el-icon-files" circle @click.prevent="loadExample"></el-button>
                       </el-tooltip>
@@ -86,6 +86,7 @@
 ///<reference path="./shims-simplex.d.ts"/>
 ///<reference path="./global.d.ts"/>
 ///<reference path="../node_modules/element-ui/types/notification.d.ts"/>
+import 'element-ui/lib/theme-chalk/display.css'
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import VStep from '@/components/VStep.vue'
 import * as algebra from 'algebra.js'
@@ -122,6 +123,24 @@ export default class App extends Vue {
   lpSteps: LPStep[] = []
   lpASCII: string = ''
   lpLaTex: string = ''
+
+  private mobile: boolean = window.innerWidth < 768
+  private get labelPosition(): 'left' | 'right' | 'top' {
+    return this.mobile ? 'top' : 'left'
+  }
+  private resizeListener!: (ev: UIEvent) => any
+
+  async mounted() {
+    await this.$nextTick()
+    this.resizeListener = event => {
+      this.mobile = window.innerWidth < 768
+    }
+    window.addEventListener('resize', this.resizeListener)
+  }
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.resizeListener)
+  }
 
   removeConstraint(i: number) {
     this.constraints.splice(i, 1)
