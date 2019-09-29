@@ -61,7 +61,7 @@
                   </el-row>
                 </el-form-item>
               </el-form>
-              <el-tabs v-show="lpMathOrigin.objective">
+              <el-tabs v-show="lpMathOrigin.objective" :stretch="true" class="result-tab">
                 <el-tab-pane label="Human">
                   <v-step
                     v-for="(step, i) in lpSteps"
@@ -476,6 +476,10 @@ body {
 
 .solve {
   width: 100%;
+}
+
+.result-tab .el-tab-pane {
+  overflow-x: auto;
 }
 
 .github-corner:hover .octo-arm {
