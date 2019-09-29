@@ -40,7 +40,7 @@
                 <el-form-item>
                   <el-row type="flex" justify="flex-start" :gutter="5">
                     <el-col :span="21">
-                      <el-tooltip effect="dark" content="Add Objective" placement="top">
+                      <el-tooltip effect="dark" content="Add Constraint" placement="top">
                         <el-button class="add-constraint" icon="el-icon-plus" @click="addConstraint"></el-button>
                       </el-tooltip>
                     </el-col>
