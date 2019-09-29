@@ -45,7 +45,7 @@ export function expressionToMath(expr: Expression) {
       varName = variable
     }
     const coeffAbs = coeff.abs()
-    res += ` ${coeff.valueOf() < 0 ? '- ' : (res.length == 0 ? '' : '+ ')}${coeffAbs.valueOf() == 1 ? varName : `${fracToMath(coeffAbs)} * ${varName}`}`
+    res += ` ${coeff.valueOf() < 0 ? '- ' : (res.length == 0 ? '' : '+ ')}${coeffAbs.valueOf() == 1 ? varName : `${fracToMath(coeffAbs)} ${varName}`}`
   }
   return res.trimLeft()
 }
