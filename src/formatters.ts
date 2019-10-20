@@ -33,8 +33,9 @@ export function fracToMath({ numer, denom }: Fraction) {
 
 export function expressionToMath(expr: Expression) {
   let res = ''
-  if(expr.constants.length) {
-    res = fracToMath(expr.constants[0])
+  let constant = expr.constants[0]
+  if(constant) {
+    res = `${constant.valueOf() < 0 ? '-' : ''}${fracToMath(expr.constants[0].abs())}`
   }
   for(const { variables: [ { variable } ], coefficients: [ coeff ] } of expr.terms) {
     const match = variable.match(/^([a-zA-Z_]+)(\d+)$/)
