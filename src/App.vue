@@ -86,6 +86,7 @@
 ///<reference path="./shims-simplex.d.ts"/>
 ///<reference path="./global.d.ts"/>
 ///<reference path="../node_modules/element-ui/types/notification.d.ts"/>
+/* eslint-disable */
 import 'element-ui/lib/theme-chalk/display.css'
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import VStep from '@/components/VStep.vue'
