@@ -4,7 +4,7 @@
 
 A web-based fully static simlex LP solver based on [node-simplex](https://github.com/Luluno01/node-simplex).
 
-Live demo: [https://simplex.untitled.vip/](https://simplex.untitled.vip/)
+Live demo: [https://simplex.untitled.cyou/](https://simplex.untitled.cyou/)
 
 ## Project setup
 ```
